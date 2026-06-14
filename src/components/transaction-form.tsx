@@ -81,8 +81,8 @@ export default function TransactionForm({ customers, defaultCustomerId, defaultT
               }`}
             >
               {t === 'udhaar'
-                ? <><ArrowUpRight className="w-4 h-4" /> Udhaar (Lent)</>
-                : <><ArrowDownLeft className="w-4 h-4" /> Payment (Got back)</>
+                ? <><ArrowUpRight className="w-4 h-4" /> Udhaar (ادھار دیا)</>
+                : <><ArrowDownLeft className="w-4 h-4" /> Payment (وصول کیا)</>
               }
             </button>
           ))}
@@ -165,7 +165,7 @@ export default function TransactionForm({ customers, defaultCustomerId, defaultT
               }`}>
               {loading
                 ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
-                : type === 'udhaar' ? '💸 Add Udhaar' : '✅ Record Payment'
+                : type === 'udhaar' ? '💸 Add Udhaar (ادھار شامل کریں)' : '✅ Record Payment (ادائیگی درج کریں)'
               }
             </Button>
           </div>

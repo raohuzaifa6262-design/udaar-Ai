@@ -83,21 +83,21 @@ export default function LedgerClient({ transactions: initial, customers, userId 
               ← Dashboard
             </button>
             <span className="text-white/20">/</span>
-            <span className="text-white font-semibold">Ledger</span>
+            <span className="text-white font-semibold">Ledger (کھاتہ)</span>
           </div>
           <Button
             onClick={() => setShowForm(true)}
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold gap-2 h-9"
           >
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Transaction</span>
+            <span className="hidden sm:inline">Add Transaction (اندراج کریں)</span>
           </Button>
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Transaction Ledger</h1>
+          <h1 className="text-2xl font-bold text-white">Transaction Ledger (تمام کھاتہ)</h1>
           <p className="text-slate-400 text-sm mt-0.5">{transactions.length} total transactions</p>
         </div>
 
@@ -106,7 +106,7 @@ export default function LedgerClient({ transactions: initial, customers, userId 
           <Card className="border border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader className="pb-1 pt-4 px-4">
               <CardTitle className="text-xs text-slate-400 flex items-center gap-1.5">
-                <TrendingDown className="w-3.5 h-3.5 text-red-400" /> Total Lent
+                <TrendingDown className="w-3.5 h-3.5 text-red-400" /> You Gave (دیا)
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
@@ -117,7 +117,7 @@ export default function LedgerClient({ transactions: initial, customers, userId 
           <Card className="border border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader className="pb-1 pt-4 px-4">
               <CardTitle className="text-xs text-slate-400 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-green-400" /> Recovered
+                <TrendingUp className="w-3.5 h-3.5 text-green-400" /> You Got (لیا)
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
@@ -128,7 +128,7 @@ export default function LedgerClient({ transactions: initial, customers, userId 
           <Card className="col-span-2 border border-purple-500/20 bg-gradient-to-br from-purple-600/10 to-blue-600/10 backdrop-blur-sm">
             <CardHeader className="pb-1 pt-4 px-4">
               <CardTitle className="text-xs text-slate-400 flex items-center gap-1.5">
-                <Wallet className="w-3.5 h-3.5 text-purple-400" /> Outstanding
+                <Wallet className="w-3.5 h-3.5 text-purple-400" /> Outstanding (بقیہ)
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-4">
@@ -142,7 +142,7 @@ export default function LedgerClient({ transactions: initial, customers, userId 
         {monthly.length > 0 && (
           <div className="space-y-2">
             <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-              <CalendarDays className="w-4 h-4" /> Monthly Summary
+              <CalendarDays className="w-4 h-4" /> Monthly Summary (ماہانہ رپورٹ)
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {monthly.slice(0, 6).map((m) => (
@@ -165,7 +165,7 @@ export default function LedgerClient({ transactions: initial, customers, userId 
         {/* Transaction History */}
         <div className="space-y-3">
           <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-            <ReceiptText className="w-4 h-4" /> Transaction History
+            <ReceiptText className="w-4 h-4" /> Transaction History (ہسٹری)
           </h2>
 
           {transactions.length === 0 ? (
@@ -179,7 +179,7 @@ export default function LedgerClient({ transactions: initial, customers, userId 
               </div>
               <Button onClick={() => setShowForm(true)}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white gap-2">
-                <Plus className="w-4 h-4" /> Add Transaction
+                <Plus className="w-4 h-4" /> Add Transaction (اندراج کریں)
               </Button>
             </div>
           ) : (
@@ -237,7 +237,7 @@ export default function LedgerClient({ transactions: initial, customers, userId 
                                     {isUdhaar ? '-' : '+'}{fmt(Number(tx.amount))}
                                   </p>
                                   <Badge variant="outline" className={`text-xs border-0 ${isUdhaar ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
-                                    {isUdhaar ? 'udhaar' : 'payment'}
+                                    {isUdhaar ? 'udhaar (ادھار)' : 'payment (وصولی)'}
                                   </Badge>
                                 </div>
 

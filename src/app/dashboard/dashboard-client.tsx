@@ -150,7 +150,7 @@ export default function DashboardClient({
           <Card className="sm:col-span-1 border border-white/10 bg-gradient-to-br from-purple-600/20 to-blue-600/20 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-slate-400 font-medium flex items-center gap-2">
-                <Wallet className="w-4 h-4" /> Outstanding
+                <Wallet className="w-4 h-4" /> Outstanding (بقیہ)
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -167,7 +167,7 @@ export default function DashboardClient({
           <Card className="border border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-slate-400 font-medium flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-red-400" /> Total Lent
+                <TrendingUp className="w-4 h-4 text-red-400" /> You Gave (دیا)
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -180,7 +180,7 @@ export default function DashboardClient({
           <Card className="border border-white/10 bg-white/5 backdrop-blur-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm text-slate-400 font-medium flex items-center gap-2">
-                <TrendingDown className="w-4 h-4 text-green-400" /> Recovered
+                <TrendingDown className="w-4 h-4 text-green-400" /> You Got (لیا)
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -199,7 +199,7 @@ export default function DashboardClient({
                   <Users className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-white font-semibold">Customers</p>
+                  <p className="text-white font-semibold">Customers (گاہک)</p>
                   <p className="text-slate-500 text-xs">{customers.length} contacts</p>
                 </div>
                 <ArrowUpRight className="w-4 h-4 text-slate-500 ml-auto group-hover:text-purple-400 transition-colors" />
@@ -213,7 +213,7 @@ export default function DashboardClient({
                   <BookOpen className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-white font-semibold">Ledger</p>
+                  <p className="text-white font-semibold">Ledger (کھاتہ)</p>
                   <p className="text-slate-500 text-xs">{recentTransactions.length > 0 ? 'View all transactions' : 'No transactions yet'}</p>
                 </div>
                 <ArrowUpRight className="w-4 h-4 text-slate-500 ml-auto group-hover:text-blue-400 transition-colors" />
@@ -225,7 +225,7 @@ export default function DashboardClient({
         {/* Recent Transactions */}
         <Card className="border border-white/10 bg-white/5 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="text-white text-lg font-semibold">Recent Activity</CardTitle>
+            <CardTitle className="text-white text-lg font-semibold">Recent Activity (حالیہ لین دین)</CardTitle>
             <Link href="/dashboard/ledger">
               <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 text-xs gap-1">
                 View all <ArrowUpRight className="w-3 h-3" />
@@ -245,7 +245,7 @@ export default function DashboardClient({
                   onClick={() => setShowTransactionForm(true)}
                   className="mt-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white gap-2"
                 >
-                  <Plus className="w-4 h-4" /> Add Debt
+                  <Plus className="w-4 h-4" /> Add Debt (ادھار دیں)
                 </Button>
               </div>
             ) : (

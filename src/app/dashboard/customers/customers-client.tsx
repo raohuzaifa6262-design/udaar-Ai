@@ -110,14 +110,14 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
               ← Dashboard
             </button>
             <span className="text-white/20">/</span>
-            <span className="text-white font-semibold">Customers</span>
+            <span className="text-white font-semibold">Customers (گاہک)</span>
           </div>
           <Button
             onClick={openAdd}
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold shadow-lg shadow-purple-500/20 gap-2 h-9"
           >
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Customer</span>
+            <span className="hidden sm:inline">Add Customer (نیا گاہک)</span>
           </Button>
         </div>
       </header>
@@ -126,7 +126,7 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
         {/* Page title + stats */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-white">Customers</h1>
+            <h1 className="text-2xl font-bold text-white">Customers (گاہک)</h1>
             <p className="text-slate-400 text-sm mt-0.5">{customers.length} total contact{customers.length !== 1 ? 's' : ''}</p>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
           <Input
-            placeholder="Search by name, email or phone…"
+            placeholder="Search by name, email or phone (تلاش کریں)…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-purple-500 focus:ring-purple-500/20"
@@ -155,7 +155,7 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
             </div>
             <div className="text-center">
               <p className="text-slate-300 font-medium text-lg">
-                {search ? 'No customers found' : 'No customers yet'}
+                {search ? 'No customers found (کوئی گاہک نہیں ملا)' : 'No customers yet (کوئی گاہک نہیں)'}
               </p>
               <p className="text-slate-500 text-sm mt-1">
                 {search ? `No results for "${search}"` : 'Add your first customer to start tracking debts'}
@@ -166,7 +166,7 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
                 onClick={openAdd}
                 className="mt-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white gap-2"
               >
-                <UserPlus className="w-4 h-4" /> Add Customer
+                <UserPlus className="w-4 h-4" /> Add Customer (نیا گاہک)
               </Button>
             )}
           </div>

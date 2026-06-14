@@ -98,7 +98,7 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
           <Card className="border border-white/10 bg-white/5">
             <CardHeader className="pb-1 pt-3 px-3">
               <CardTitle className="text-xs text-slate-400 flex items-center gap-1">
-                <TrendingDown className="w-3 h-3 text-red-400" /> Lent
+                <TrendingDown className="w-3 h-3 text-red-400" /> Gave (دیا)
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 pb-3">
@@ -109,7 +109,7 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
           <Card className="border border-white/10 bg-white/5">
             <CardHeader className="pb-1 pt-3 px-3">
               <CardTitle className="text-xs text-slate-400 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3 text-green-400" /> Received
+                <TrendingUp className="w-3 h-3 text-green-400" /> Got (لیا)
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 pb-3">
@@ -120,7 +120,7 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
           <Card className={`border ${balance > 0 ? 'border-orange-500/20 bg-orange-500/5' : balance < 0 ? 'border-green-500/20 bg-green-500/5' : 'border-white/10 bg-white/5'}`}>
             <CardHeader className="pb-1 pt-3 px-3">
               <CardTitle className="text-xs text-slate-400 flex items-center gap-1">
-                <Wallet className="w-3 h-3 text-purple-400" /> Balance
+                <Wallet className="w-3 h-3 text-purple-400" /> Balance (بقیہ)
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 pb-3">
@@ -128,7 +128,7 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
                 {fmt(Math.abs(balance))}
               </p>
               <p className="text-xs text-slate-500 mt-0.5">
-                {balance > 0 ? 'owes you' : balance < 0 ? 'you owe' : 'settled'}
+                {balance > 0 ? 'owes you (ان کے ذمہ)' : balance < 0 ? 'you owe (آپ کے ذمہ)' : 'settled (صاف)'}
               </p>
             </CardContent>
           </Card>
@@ -142,21 +142,21 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
               onClick={() => { setDefaultType('udhaar'); setShowForm(true) }}
               className="flex-1 border-red-500/20 bg-red-500/5 text-red-300 hover:bg-red-500/10 hover:border-red-500/30 gap-2"
             >
-              <ArrowUpRight className="w-4 h-4" /> Add Udhaar
+              <ArrowUpRight className="w-4 h-4" /> Add Udhaar (ادھار دیں)
             </Button>
             <Button
               variant="outline"
               onClick={() => { setDefaultType('payment'); setShowForm(true) }}
               className="flex-1 border-green-500/20 bg-green-500/5 text-green-300 hover:bg-green-500/10 hover:border-green-500/30 gap-2"
             >
-              <ArrowDownLeft className="w-4 h-4" /> Record Payment
+              <ArrowDownLeft className="w-4 h-4" /> Record Payment (وصولی)
             </Button>
           </div>
         )}
 
         {/* Transaction ledger table */}
         <div className="space-y-2">
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Transaction History</h2>
+          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Transaction History (ہسٹری)</h2>
 
           {transactions.length === 0 ? (
             <div className="flex flex-col items-center py-16 space-y-3">
@@ -167,7 +167,7 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
               <p className="text-slate-500 text-sm">Start by adding udhaar or a payment</p>
               <Button onClick={() => setShowForm(true)}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white gap-2">
-                <Plus className="w-4 h-4" /> Add Transaction
+                <Plus className="w-4 h-4" /> Add Transaction (اندراج کریں)
               </Button>
             </div>
           ) : (
@@ -175,9 +175,9 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
               {/* Table header */}
               <div className="hidden sm:grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-white/5">
                 <span>Date / Note</span>
-                <span className="text-right">Udhaar</span>
-                <span className="text-right">Payment</span>
-                <span className="text-right">Balance</span>
+                <span className="text-right">Udhaar (ادھار)</span>
+                <span className="text-right">Payment (وصولی)</span>
+                <span className="text-right">Balance (بقیہ)</span>
                 <span />
               </div>
 

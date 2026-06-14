@@ -155,7 +155,7 @@ export default function DashboardClient({
             </CardHeader>
             <CardContent>
               <p className={`text-3xl font-bold ${outstanding >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                ₹{Math.abs(outstanding).toLocaleString()}
+                Rs.{Math.abs(outstanding).toLocaleString()}
               </p>
               <p className="text-xs text-slate-500 mt-1">
                 {outstanding >= 0 ? 'Still owed to you' : 'You owe more than lent'}
@@ -171,7 +171,7 @@ export default function DashboardClient({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-red-400">₹{totalLent.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-red-400">Rs.{totalLent.toLocaleString()}</p>
               <p className="text-xs text-slate-500 mt-1">All udhaar given</p>
             </CardContent>
           </Card>
@@ -184,7 +184,7 @@ export default function DashboardClient({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-green-400">₹{totalRecovered.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-green-400">Rs.{totalRecovered.toLocaleString()}</p>
               <p className="text-xs text-slate-500 mt-1">Payments received</p>
             </CardContent>
           </Card>
@@ -279,7 +279,7 @@ export default function DashboardClient({
                           {isUdhaar ? 'udhaar' : 'payment'}
                         </Badge>
                         <p className={`text-sm font-bold ${isUdhaar ? 'text-red-400' : 'text-green-400'}`}>
-                          {isUdhaar ? '-' : '+'}₹{Number(tx.amount).toLocaleString()}
+                          {isUdhaar ? '-' : '+'}Rs.{Number(tx.amount).toLocaleString()}
                         </p>
                       </div>
                     </div>

@@ -110,7 +110,7 @@ export default function TransactionForm({ customers, defaultCustomerId, defaultT
 
           {/* Amount */}
           <div className="space-y-1.5">
-            <Label htmlFor="amount" className="text-slate-300 text-sm">Amount (₹) <span className="text-red-400">*</span></Label>
+            <Label htmlFor="amount" className="text-slate-300 text-sm">Amount (Rs.) <span className="text-red-400">*</span></Label>
             <Input
               id="amount"
               type="number"

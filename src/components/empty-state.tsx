@@ -84,11 +84,11 @@ export default function EmptyState({ variant, searchQuery, onAction, actionLabel
               </div>
               <div className="flex justify-between items-center text-[10px] text-red-500 font-extrabold">
                 <span>Gave (دیا)</span>
-                <span>₹ ———</span>
+                <span>Rs. ———</span>
               </div>
               <div className="flex justify-between items-center text-[10px] text-emerald-605 dark:text-emerald-400 font-extrabold">
                 <span>Got (لیا)</span>
-                <span>₹ ———</span>
+                <span>Rs. ———</span>
               </div>
             </div>
 

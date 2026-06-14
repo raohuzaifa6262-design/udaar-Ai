@@ -2,11 +2,15 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import DashboardClient from './dashboard-client'
 
-export default async function DashboardPage() {
+export default async function DashboardPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+
+  // Resolve search parameters for Next.js 15+
+  const searchParams = await props.searchParams
+  const range = searchParams?.range || 'all'
 
   // Fetch profile
   const { data: profile } = await supabase
@@ -15,27 +19,56 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  // Fetch transactions (source of truth for balances)
-  const { data: transactions } = await (supabase as any)
-    .from('transactions')
-    .select('*')
+  // Calculate date range
+  let fromDate = null
+  if (range === '7') {
+    fromDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  } else if (range === '30') {
+    fromDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+  }
+
+  // Fetch journal entries
+  let query = (supabase as any)
+    .from('journal_entries')
+    .select('*, customers(name), suppliers(name)')
     .eq('user_id', user.id)
     .order('transaction_date', { ascending: false })
 
-  const txList: any[] = transactions ?? []
+  if (fromDate) {
+    query = query.gte('transaction_date', fromDate)
+  }
 
-  // Total lent (udhaar = you gave money out)
-  const totalLent = txList
-    .filter((t) => t.type === 'udhaar')
-    .reduce((sum, t) => sum + Number(t.amount), 0)
+  const { data: entries } = await query
+  const txList: any[] = entries ?? []
 
-  // Total recovered (payment = you got money back)
-  const totalRecovered = txList
-    .filter((t) => t.type === 'payment')
-    .reduce((sum, t) => sum + Number(t.amount), 0)
+  // Calculate Double-Entry Stats
+  let totalSales = 0
+  let totalExpenses = 0
+  let accountsReceivableDebit = 0
+  let accountsReceivableCredit = 0
+  let cashDebit = 0
+  let cashCredit = 0
 
-  // Outstanding = still owed to you
-  const outstanding = totalLent - totalRecovered
+  txList.forEach(tx => {
+    const amt = Number(tx.amount)
+    
+    // Sales
+    if (tx.credit_account === 'Sales') totalSales += amt
+    
+    // Expenses
+    if (tx.debit_account?.startsWith('Expense')) totalExpenses += amt
+
+    // Accounts Receivable
+    if (tx.debit_account === 'Accounts Receivable') accountsReceivableDebit += amt
+    if (tx.credit_account === 'Accounts Receivable') accountsReceivableCredit += amt
+
+    // Cash
+    if (tx.debit_account === 'Cash') cashDebit += amt
+    if (tx.credit_account === 'Cash') cashCredit += amt
+  })
+
+  const outstandingUdhaar = accountsReceivableDebit - accountsReceivableCredit
+  const cashBalance = cashDebit - cashCredit
 
   // Recent 5 transactions for activity feed
   const recentTransactions = txList.slice(0, 5)
@@ -55,9 +88,11 @@ export default async function DashboardPage() {
       profile={profile}
       customers={customersList}
       recentTransactions={recentTransactions}
-      totalLent={totalLent}
-      totalRecovered={totalRecovered}
-      outstanding={outstanding}
+      totalSales={totalSales}
+      totalExpenses={totalExpenses}
+      cashBalance={cashBalance}
+      outstandingUdhaar={outstandingUdhaar}
+      currentRange={range as string}
     />
   )
 }

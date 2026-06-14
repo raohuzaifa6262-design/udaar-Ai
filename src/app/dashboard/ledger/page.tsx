@@ -7,9 +7,9 @@ export default async function LedgerPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: transactions }, { data: customers }] = await Promise.all([
+  const [{ data: entries }, { data: customers }] = await Promise.all([
     supabase
-      .from('transactions')
+      .from('journal_entries')
       .select('*')
       .eq('user_id', user.id)
       .order('transaction_date', { ascending: false }),
@@ -19,7 +19,7 @@ export default async function LedgerPage() {
 
   return (
     <LedgerClient
-      transactions={transactions ?? []}
+      entries={entries ?? []}
       customers={customers ?? []}
       userId={user.id}
     />

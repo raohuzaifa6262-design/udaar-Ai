@@ -14,7 +14,7 @@ export default async function CustomerLedgerPage({ params }: Props) {
 
   const [txRes, custRes] = await Promise.all([
     supabase
-      .from('transactions')
+      .from('journal_entries')
       .select('*')
       .eq('user_id', user.id)
       .eq('customer_id', customerId)
@@ -28,7 +28,7 @@ export default async function CustomerLedgerPage({ params }: Props) {
   return (
     <CustomerLedgerClient
       customer={custRes.data}
-      transactions={txRes.data ?? []}
+      entries={txRes.data ?? []}
       userId={user.id}
     />
   )

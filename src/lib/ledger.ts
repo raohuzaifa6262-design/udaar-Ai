@@ -1,14 +1,16 @@
 import type { Database } from '@/lib/database.types'
 
-type Transaction = Database['public']['Tables']['transactions']['Row']
+type JournalEntry = Database['public']['Tables']['journal_entries']['Row']
 
 export type MonthlyTotal = {
   month: string   // e.g. "May 2025"
   year: number
   monthIndex: number
-  udhaar: number
-  payment: number
-  net: number     // udhaar - payment (positive = more lent out)
+  sales: number
+  expenses: number
+  udhaarGiven: number
+  paymentReceived: number
+  net: number     // Total Sales - Total Expenses for dashboard summary
 }
 
 export type CustomerBalance = {
@@ -18,11 +20,11 @@ export type CustomerBalance = {
   balance: number   // positive = customer owes you, negative = you owe them
 }
 
-/** Group transactions by YYYY-MM for monthly aggregation */
-export function calcMonthlyTotals(transactions: Transaction[]): MonthlyTotal[] {
+/** Group journal entries by YYYY-MM for monthly aggregation */
+export function calcMonthlyTotals(entries: JournalEntry[]): MonthlyTotal[] {
   const map = new Map<string, MonthlyTotal>()
 
-  for (const tx of transactions) {
+  for (const tx of entries) {
     const date = new Date(tx.transaction_date)
     const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
 
@@ -31,19 +33,26 @@ export function calcMonthlyTotals(transactions: Transaction[]): MonthlyTotal[] {
         month: date.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }),
         year: date.getFullYear(),
         monthIndex: date.getMonth(),
-        udhaar: 0,
-        payment: 0,
+        sales: 0,
+        expenses: 0,
+        udhaarGiven: 0,
+        paymentReceived: 0,
         net: 0,
       })
     }
 
     const entry = map.get(key)!
-    if (tx.type === 'udhaar') {
-      entry.udhaar += Number(tx.amount)
-    } else {
-      entry.payment += Number(tx.amount)
-    }
-    entry.net = entry.udhaar - entry.payment
+    const amt = Number(tx.amount)
+
+    // Sales vs Expenses
+    if (tx.credit_account === 'Sales') entry.sales += amt
+    if (tx.debit_account?.startsWith('Expense')) entry.expenses += amt
+
+    // Udhaar vs Payment Tracking
+    if (tx.debit_account === 'Accounts Receivable') entry.udhaarGiven += amt
+    if (tx.credit_account === 'Accounts Receivable') entry.paymentReceived += amt
+
+    entry.net = entry.sales - entry.expenses
   }
 
   // Sort newest first
@@ -53,27 +62,30 @@ export function calcMonthlyTotals(transactions: Transaction[]): MonthlyTotal[] {
 }
 
 /** Calculate the running balance for a single customer's transactions */
-export function calcCustomerBalance(transactions: Transaction[]): CustomerBalance & {
-  runningLedger: (Transaction & { runningBalance: number })[]
+export function calcCustomerBalance(entries: JournalEntry[], customerId: string): CustomerBalance & {
+  runningLedger: (JournalEntry & { runningBalance: number })[]
 } {
   let balance = 0
-  const runningLedger = [...transactions]
+  const customerEntries = entries.filter(e => e.customer_id === customerId)
+
+  const runningLedger = [...customerEntries]
     .sort((a, b) => new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime())
     .map((tx) => {
-      balance += tx.type === 'udhaar' ? Number(tx.amount) : -Number(tx.amount)
+      // For a customer: Accounts Receivable Debit increases balance owed. Credit decreases it.
+      if (tx.debit_account === 'Accounts Receivable') balance += Number(tx.amount)
+      if (tx.credit_account === 'Accounts Receivable') balance -= Number(tx.amount)
       return { ...tx, runningBalance: balance }
     })
 
-  const totalUdhaar = transactions
-    .filter((t) => t.type === 'udhaar')
-    .reduce((s, t) => s + Number(t.amount), 0)
-
-  const totalPayment = transactions
-    .filter((t) => t.type === 'payment')
-    .reduce((s, t) => s + Number(t.amount), 0)
+  let totalUdhaar = 0
+  let totalPayment = 0
+  customerEntries.forEach(tx => {
+    if (tx.debit_account === 'Accounts Receivable') totalUdhaar += Number(tx.amount)
+    if (tx.credit_account === 'Accounts Receivable') totalPayment += Number(tx.amount)
+  })
 
   return {
-    customerId: transactions[0]?.customer_id ?? '',
+    customerId,
     totalUdhaar,
     totalPayment,
     balance: totalUdhaar - totalPayment,
@@ -81,33 +93,41 @@ export function calcCustomerBalance(transactions: Transaction[]): CustomerBalanc
   }
 }
 
-/** Summary stats across all transactions */
-export function calcDashboardStats(transactions: Transaction[]) {
-  const totalUdhaar = transactions
-    .filter((t) => t.type === 'udhaar')
-    .reduce((s, t) => s + Number(t.amount), 0)
+/** Summary stats across all journal entries */
+export function calcDashboardStats(entries: JournalEntry[]) {
+  let totalSales = 0
+  let totalExpenses = 0
+  let outstanding = 0
 
-  const totalRecovered = transactions
-    .filter((t) => t.type === 'payment')
-    .reduce((s, t) => s + Number(t.amount), 0)
-
-  const outstanding = totalUdhaar - totalRecovered
+  entries.forEach(tx => {
+    const amt = Number(tx.amount)
+    if (tx.credit_account === 'Sales') totalSales += amt
+    if (tx.debit_account?.startsWith('Expense')) totalExpenses += amt
+    if (tx.debit_account === 'Accounts Receivable') outstanding += amt
+    if (tx.credit_account === 'Accounts Receivable') outstanding -= amt
+  })
 
   // This month
   const now = new Date()
-  const thisMonthTxs = transactions.filter((t) => {
+  const thisMonthEntries = entries.filter((t) => {
     const d = new Date(t.transaction_date)
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()
   })
-  const thisMonthUdhaar = thisMonthTxs.filter((t) => t.type === 'udhaar').reduce((s, t) => s + Number(t.amount), 0)
-  const thisMonthPayment = thisMonthTxs.filter((t) => t.type === 'payment').reduce((s, t) => s + Number(t.amount), 0)
+  
+  let thisMonthSales = 0
+  let thisMonthExpenses = 0
+  thisMonthEntries.forEach(tx => {
+    const amt = Number(tx.amount)
+    if (tx.credit_account === 'Sales') thisMonthSales += amt
+    if (tx.debit_account?.startsWith('Expense')) thisMonthExpenses += amt
+  })
 
-  return { totalUdhaar, totalRecovered, outstanding, thisMonthUdhaar, thisMonthPayment }
+  return { totalSales, totalExpenses, outstanding, thisMonthSales, thisMonthExpenses }
 }
 
-/** Format amount as INR */
+/** Format amount as PKR */
 export function fmt(amount: number) {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+  return new Intl.NumberFormat('en-PK', { style: 'currency', currency: 'PKR', maximumFractionDigits: 0 }).format(amount)
 }
 
 /** Format date nicely */

@@ -14,7 +14,7 @@ import {
 import type { Database } from '@/lib/database.types'
 import {
   Plus, Search, Users, Phone, Mail, FileText,
-  MoreVertical, Pencil, Trash2, Loader2, X, UserPlus,
+  MoreVertical, Pencil, Trash2, Loader2, X, UserPlus, MessageCircle,
 } from 'lucide-react'
 
 type Customer = Database['public']['Tables']['customers']['Row']
@@ -33,6 +33,7 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
   const [customers, setCustomers] = useState<Customer[]>(initial)
   const [search, setSearch] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [form, setForm] = useState<FormData>(emptyForm)
@@ -175,7 +176,12 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
             {filtered.map((customer) => (
               <Card
                 key={customer.id}
-                className="border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/8 hover:border-purple-500/30 transition-all duration-200 group"
+                onClick={(e) => {
+                  // Prevent opening modal if clicking the dropdown menu
+                  if ((e.target as HTMLElement).closest('[data-radix-collection-item]') || (e.target as HTMLElement).closest('button')) return;
+                  setSelectedCustomer(customer);
+                }}
+                className="border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/8 hover:border-purple-500/30 transition-all duration-200 group cursor-pointer"
               >
                 <CardHeader className="pb-3 flex flex-row items-start justify-between gap-2">
                   <div className="flex items-center gap-3 min-w-0">
@@ -240,6 +246,70 @@ export default function CustomersClient({ customers: initial, userId }: Props) {
           </div>
         )}
       </main>
+
+      {/* Customer Action Modal (WhatsApp / Call) */}
+      {selectedCustomer && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedCustomer(null)} />
+          <div className="relative w-full max-w-sm bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setSelectedCustomer(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col items-center mt-2 space-y-4">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-white/10 flex items-center justify-center text-white font-bold text-3xl">
+                {selectedCustomer.name[0].toUpperCase()}
+              </div>
+              <div className="text-center">
+                <h2 className="text-xl font-bold text-white">{selectedCustomer.name}</h2>
+                <p className="text-slate-400 mt-1">{selectedCustomer.phone || 'No phone number'}</p>
+              </div>
+              
+              <div className="w-full space-y-3 mt-6">
+                <a
+                  href={`https://wa.me/${selectedCustomer.phone?.replace(/[^0-9+]/g, '').replace('+', '') || ''}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    if (!selectedCustomer.phone) {
+                      e.preventDefault();
+                      toast.error('No phone number saved for this customer');
+                    }
+                  }}
+                  className="flex items-center justify-center w-full gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white py-3 rounded-xl font-semibold transition-colors"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  WhatsApp
+                </a>
+                <a
+                  href={`tel:${selectedCustomer.phone?.replace(/[^0-9+]/g, '') || ''}`}
+                  onClick={(e) => {
+                    if (!selectedCustomer.phone) {
+                      e.preventDefault();
+                      toast.error('No phone number saved for this customer');
+                    }
+                  }}
+                  className="flex items-center justify-center w-full gap-2 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-semibold transition-colors"
+                >
+                  <Phone className="w-5 h-5" />
+                  Call
+                </a>
+                <Button
+                  variant="ghost"
+                  className="w-full text-slate-400 hover:text-white hover:bg-white/5"
+                  onClick={() => {
+                    router.push(`/dashboard/ledger/${selectedCustomer.id}`);
+                  }}
+                >
+                  View Ledger
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Drawer (Modal) */}
       {showForm && (

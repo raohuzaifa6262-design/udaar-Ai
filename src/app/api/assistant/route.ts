@@ -193,7 +193,7 @@ export async function POST(req: Request) {
     const message = response.candidates[0].content
 
     // Check for tool calls
-    if (message.parts && message.parts.some(p => p.functionCall)) {
+    if (message && message.parts && message.parts.some(p => p.functionCall)) {
       
       const toolCalls = message.parts.filter(p => p.functionCall).map(p => p.functionCall)
       const toolResponses = []

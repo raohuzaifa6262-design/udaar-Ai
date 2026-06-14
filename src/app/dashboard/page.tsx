@@ -24,22 +24,6 @@ export default async function DashboardPage() {
 
   const txList: any[] = transactions ?? []
 
-  // Total lent (udhaar = you gave money out)
-  const totalLent = txList
-    .filter((t) => t.type === 'udhaar')
-    .reduce((sum, t) => sum + Number(t.amount), 0)
-
-  // Total recovered (payment = you got money back)
-  const totalRecovered = txList
-    .filter((t) => t.type === 'payment')
-    .reduce((sum, t) => sum + Number(t.amount), 0)
-
-  // Outstanding = still owed to you
-  const outstanding = totalLent - totalRecovered
-
-  // Recent 5 transactions for activity feed
-  const recentTransactions = txList.slice(0, 5)
-
   // Fetch customers for the Add Debt form + customer name mapping
   const { data: customers } = await (supabase as any)
     .from('customers')
@@ -54,10 +38,7 @@ export default async function DashboardPage() {
       user={user}
       profile={profile}
       customers={customersList}
-      recentTransactions={recentTransactions}
-      totalLent={totalLent}
-      totalRecovered={totalRecovered}
-      outstanding={outstanding}
+      transactions={txList}
     />
   )
 }

@@ -41,22 +41,40 @@ interface DashboardClientProps {
   user: SupabaseUser
   profile: Profile | null
   customers: Customer[]
-  recentTransactions: any[]
-  totalLent: number
-  totalRecovered: number
-  outstanding: number
+  transactions: any[]
 }
 
 export default function DashboardClient({
-  user, profile, customers, recentTransactions, totalLent, totalRecovered, outstanding,
+  user, profile, customers, transactions,
 }: DashboardClientProps) {
   const router = useRouter()
   const [loggingOut, setLoggingOut] = useState(false)
   const [showTransactionForm, setShowTransactionForm] = useState(false)
+  const [dateFilter, setDateFilter] = useState<'all' | '7days' | '30days'>('all')
 
   const displayName = profile?.full_name || user.email?.split('@')[0] || 'User'
 
   const customerMap = new Map(customers.map((c) => [c.id, c]))
+
+  const filteredTransactions = transactions.filter((t) => {
+    if (dateFilter === 'all') return true
+    const txDate = new Date(t.transaction_date)
+    const cutoff = new Date()
+    if (dateFilter === '7days') cutoff.setDate(cutoff.getDate() - 7)
+    if (dateFilter === '30days') cutoff.setDate(cutoff.getDate() - 30)
+    return txDate >= cutoff
+  })
+
+  const totalLent = filteredTransactions
+    .filter((t) => t.type === 'udhaar')
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+
+  const totalRecovered = filteredTransactions
+    .filter((t) => t.type === 'payment')
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+
+  const outstanding = totalLent - totalRecovered
+  const recentTransactions = filteredTransactions.slice(0, 5)
 
   async function handleLogout() {
     setLoggingOut(true)
@@ -136,12 +154,23 @@ export default function DashboardClient({
             </h1>
             <p className="text-slate-400 mt-1">Here&apos;s your financial overview</p>
           </div>
-          <Button
-            onClick={() => setShowTransactionForm(true)}
-            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold shadow-lg shadow-purple-500/20 gap-2"
-          >
-            <Plus className="w-4 h-4" /> Add Debt
-          </Button>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value as any)}
+              className="w-full sm:w-auto bg-white/5 border border-white/10 text-white text-sm rounded-lg px-3 py-2 outline-none focus:border-purple-500 [&>option]:bg-slate-900"
+            >
+              <option value="all">All Time (مکمل)</option>
+              <option value="30days">Last 30 Days (گزشتہ 30 دن)</option>
+              <option value="7days">Last 7 Days (گزشتہ 7 دن)</option>
+            </select>
+            <Button
+              onClick={() => setShowTransactionForm(true)}
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold shadow-lg shadow-purple-500/20 gap-2"
+            >
+              <Plus className="w-4 h-4" /> Add Debt (ادھار دیں)
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}

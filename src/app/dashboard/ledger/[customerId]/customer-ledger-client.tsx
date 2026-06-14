@@ -77,11 +77,19 @@ export default function CustomerLedgerClient({ customer, transactions: initial, 
             </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-xl font-bold text-white">{customer.name}</h1>
-              <div className="flex flex-wrap gap-3 mt-1">
+              <div className="flex flex-wrap gap-3 mt-1 items-center">
                 {customer.phone && (
-                  <span className="flex items-center gap-1 text-xs text-slate-400">
-                    <Phone className="w-3 h-3" /> {customer.phone}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1 text-xs text-slate-400">
+                      <Phone className="w-3 h-3" /> {customer.phone}
+                    </span>
+                    <a href={`tel:${customer.phone.replace(/[^0-9+]/g, '')}`} className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-medium">
+                      Call (کال کریں)
+                    </a>
+                    <a href={`https://wa.me/${customer.phone.replace(/[^0-9+]/g, '').replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-green-400 hover:text-green-300 font-medium">
+                      WhatsApp (واٹس ایپ)
+                    </a>
+                  </div>
                 )}
                 {customer.email && (
                   <span className="flex items-center gap-1 text-xs text-slate-400">

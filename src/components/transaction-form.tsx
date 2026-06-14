@@ -26,7 +26,6 @@ export default function TransactionForm({ customers, defaultCustomerId, defaultT
   const [note, setNote] = useState('')
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [loading, setLoading] = useState(false)
-  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -56,56 +55,50 @@ export default function TransactionForm({ customers, defaultCustomerId, defaultT
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      
-      {/* Panel */}
-      <div className="relative w-full sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl space-y-5 animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+      <div className="relative w-full sm:max-w-md bg-slate-900 border border-white/10 rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl space-y-5 animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            Add New Entry / نیا اندراج
-          </h2>
-          <button onClick={onClose} className="text-slate-450 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <h2 className="text-lg font-bold text-white">New Transaction</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors p-1 rounded-md hover:bg-white/10">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Type Toggle */}
-        <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl">
+        <div className="flex gap-2 p-1 bg-white/5 border border-white/10 rounded-xl">
           {(['udhaar', 'payment'] as const).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setType(t)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-extrabold transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
                 type === t
                   ? t === 'udhaar'
-                    ? 'bg-red-600 text-white shadow-md'
-                    : 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                    : 'bg-green-500/20 text-green-300 border border-green-500/30'
+                  : 'text-slate-400 hover:text-slate-300'
               }`}
             >
-              {t === 'udhaar' ? (
-                <><ArrowUpRight className="w-4 h-4" /> Gave (Udhaar)</>
-              ) : (
-                <><ArrowDownLeft className="w-4 h-4" /> Got (Payment)</>
-              )}
+              {t === 'udhaar'
+                ? <><ArrowUpRight className="w-4 h-4" /> Udhaar (Lent)</>
+                : <><ArrowDownLeft className="w-4 h-4" /> Payment (Got back)</>
+              }
             </button>
           ))}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Customer selection (hidden if default passed) */}
+          {/* Customer */}
           {!defaultCustomerId && (
             <div className="space-y-1.5">
-              <Label className="text-slate-705 dark:text-slate-350 text-xs font-semibold uppercase tracking-wider">Customer / گاہک <span className="text-red-500">*</span></Label>
+              <Label className="text-slate-300 text-sm">Customer <span className="text-red-400">*</span></Label>
               <select
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
                 required
                 disabled={loading}
-                className="w-full h-11 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm px-3 py-2 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all disabled:opacity-50 [&>option]:bg-white dark:[&>option]:bg-slate-900"
+                className="w-full rounded-md bg-white/5 border border-white/10 text-white text-sm px-3 py-2 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition-all disabled:opacity-50 [&>option]:bg-slate-900"
               >
                 <option value="">Select customer…</option>
                 {customers.map((c) => (
@@ -115,9 +108,9 @@ export default function TransactionForm({ customers, defaultCustomerId, defaultT
             </div>
           )}
 
-          {/* Amount input */}
+          {/* Amount */}
           <div className="space-y-1.5">
-            <Label htmlFor="amount" className="text-slate-705 dark:text-slate-350 text-xs font-semibold uppercase tracking-wider">Amount / رقم (PKR) <span className="text-red-500">*</span></Label>
+            <Label htmlFor="amount" className="text-slate-300 text-sm">Amount (₹) <span className="text-red-400">*</span></Label>
             <Input
               id="amount"
               type="number"
@@ -128,64 +121,52 @@ export default function TransactionForm({ customers, defaultCustomerId, defaultT
               onChange={(e) => setAmount(e.target.value)}
               required
               disabled={loading}
-              className="h-12 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 text-xl font-extrabold"
+              className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-purple-500 text-lg font-semibold"
             />
           </div>
 
-          {/* Date input */}
+          {/* Date */}
           <div className="space-y-1.5">
-            <Label htmlFor="tx-date" className="text-slate-705 dark:text-slate-350 text-xs font-semibold uppercase tracking-wider">Date / تاریخ</Label>
+            <Label htmlFor="tx-date" className="text-slate-300 text-sm">Date</Label>
             <input
               id="tx-date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               disabled={loading}
-              style={{ colorScheme: isDark ? 'dark' : 'light' }}
-              className="w-full h-11 rounded-lg bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 text-sm px-3 py-2 outline-none transition-all disabled:opacity-50"
+              style={{ colorScheme: 'dark' }}
+              className="w-full rounded-md bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 text-sm px-3 py-2 outline-none transition-all disabled:opacity-50"
             />
           </div>
 
-          {/* Note input */}
+          {/* Note */}
           <div className="space-y-1.5">
-            <Label htmlFor="note" className="text-slate-705 dark:text-slate-350 text-xs font-semibold uppercase tracking-wider">Note / تفصیل (optional)</Label>
+            <Label htmlFor="note" className="text-slate-300 text-sm">Note (optional)</Label>
             <Input
               id="note"
-              placeholder="e.g. Rice purchase, cash payment..."
+              placeholder="e.g. Grocery money, rent…"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={loading}
-              className="h-11 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+              className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-purple-500"
             />
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3 pt-1">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-              className="flex-1 h-11 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
+            <Button type="button" variant="outline" onClick={onClose} disabled={loading}
+              className="flex-1 border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className={`flex-1 h-11 font-bold text-white shadow-md ${
+            <Button type="submit" disabled={loading}
+              className={`flex-1 font-semibold text-white shadow-lg ${
                 type === 'udhaar'
-                  ? 'bg-red-650 hover:bg-red-500 shadow-red-600/10'
-                  : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/10'
-              }`}
-            >
-              {loading ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
-              ) : type === 'udhaar' ? (
-                'Gave / دیئے'
-              ) : (
-                'Got / لیے'
-              )}
+                  ? 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 shadow-red-500/20'
+                  : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 shadow-green-500/20'
+              }`}>
+              {loading
+                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
+                : type === 'udhaar' ? '💸 Add Udhaar' : '✅ Record Payment'
+              }
             </Button>
           </div>
         </form>

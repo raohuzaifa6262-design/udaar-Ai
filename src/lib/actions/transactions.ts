@@ -16,19 +16,12 @@ export async function addTransaction(formData: {
 
   if (formData.amount <= 0) return { error: 'Amount must be greater than 0' }
 
-  const debitAccount = formData.type === 'udhaar' ? 'Accounts Receivable' : 'Cash'
-  const creditAccount = formData.type === 'udhaar' ? 'Cash' : 'Accounts Receivable'
-  const txType = formData.type === 'udhaar' ? 'Udhaar Sale' : 'Payment Received'
-
-  const { error } = await (supabase as any).from('journal_entries').insert({
+  const { error } = await (supabase as any).from('transactions').insert({
     user_id: user.id,
     customer_id: formData.customer_id,
-    transaction_type: txType,
-    debit_account: debitAccount,
-    credit_account: creditAccount,
+    type: formData.type,
     amount: formData.amount,
-    description: formData.note || null,
-    payment_method: 'Cash',
+    note: formData.note || null,
     transaction_date: formData.transaction_date,
   })
 
@@ -45,7 +38,7 @@ export async function deleteTransaction(id: string, customerId: string) {
   if (!user) return { error: 'Not authenticated' }
 
   const { error } = await (supabase as any)
-    .from('journal_entries')
+    .from('transactions')
     .delete()
     .eq('id', id)
     .eq('user_id', user.id)
